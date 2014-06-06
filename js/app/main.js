@@ -20,7 +20,7 @@ $(document).ready(function() {
 		var windDirSpliter = windDirWhole[1].split("(");
 		var windDir =  windDirSpliter[0];
 		var windAngle = windDirSpliter[1].replace('&#176;)','');
-		var windDirStr = windDir+ ' : ' +	windAngle+"°";
+		var windDirStr = windDir+ ' | ' +	windAngle+"°";
 		$("#windDir").text(windDirStr);
 		
 		//wind speed
@@ -48,7 +48,7 @@ $(document).ready(function() {
  		var waveDirSpliter = waveDirTemp[1].split("(");
 		var waveDir =  waveDirSpliter[0];
 		var waveAngle = waveDirSpliter[1].replace('&#176;)','');
-		var waveDirStr = waveDir+ ' : ' +	waveAngle+"°";
+		var waveDirStr = waveDir+ ' | ' +	waveAngle+"°";
  		$("#waveDir").text(waveDirStr);
  	});
 
