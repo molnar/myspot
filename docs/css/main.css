@@ -1,0 +1,44 @@
+body{
+	font-family: 'Cabin', sans-serif;
+	font-size: 30px;
+	color: #0099CC;
+}
+
+hr { display: block; 
+	height: 1px;
+	width: 300px;
+    border: 0; 
+    border-top: 1px solid #edd;
+    margin: 1em 0; 
+    padding: 0; 
+}
+h4{ 
+	margin:0 auto; 
+	text-align: center;	
+	margin-top: 40px;
+	font-style: italic;
+}
+p{
+	line-height: 20px;
+}
+
+.container{
+
+	display: block;	
+	width: 300px;    
+    border: 1px solid #edd;
+    border-radius: 25px;
+    margin:0 auto; 
+    padding: 0; 
+    margin-top: 2px;
+    text-align: center;
+}
+
+#tides{
+	text-align: left;
+	padding-left: 25px;
+	/*background: url(arrow.png) no-repeat center;*/		
+}
+
+
+
