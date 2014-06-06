@@ -13,6 +13,7 @@ $(document).ready(function() {
 	var milthours = hours;
 	if(ampm=="pm")milthours = 12+milthours; 
 	var tideTime = milthours+"."+minutes;
+	
   	$("#time").text(strTime);
 
 	//WINDS 
@@ -58,23 +59,20 @@ $(document).ready(function() {
  	});
 
  	//TIDES
- 	var tideurl = "js/app/data.json"
+ 	var tideurl = "../js/app/data.json"
  	$.getJSON( tideurl, function( data ) {
 
  		var datestring = today(); 		
  		var tidalinfo = data.datainfo.data.item;
- 		var previous; 
+ 		var previous;
+ 		var previousTide; 
+ 		var previousI
  		var tidalState ="ebb"
 
- 		if(tidalState =="flood"){
- 			$("#tides").css("background","url(css/arrow_up.png) no-repeat center");
- 			//$('myOjbect').css('background-image', 'url(' + imageUrl + ')');
- 		}
- 		if(tidalState =="ebb"){
- 			$("#tides").css("background","url(css/arrow_down.png) no-repeat center");
- 		}
+ 		
 
  		$.each(tidalinfo, function(i,d){
+
  			if(d.date==datestring){ 				
  				var addthis = "<p>"+d.highlow+"-  "+d.time+"   "+d.predictions_in_ft+" ft"+"</p>"
  				$("#tides").append(addthis);
@@ -88,17 +86,44 @@ $(document).ready(function() {
  				var thisTime = arrTime[0]+"."+arrTime[1];
 
  				if(previous){
- 					console.log(Number(thisTime),Number(tideTime));
+ 					
  					//handle slack
- 					if(tideTime == thisTime)tidalState ="Slack"
+ 					if(Number(tideTime) == Number(thisTime))tidalState ="Slack"
+ 					//	
+ 					if(Number(tideTime) > Number(previous) && Number(tideTime) < Number(thisTime) ){ 						
+ 						if(previousTide =="L" && d.highlow == "H")tidalState ="flood";
+ 						if(previousTide =="H" && d.highlow == "L")tidalState ="ebb";
+ 					}else{
 
+ 					}
+
+
+
+ 				}else{
+
+ 					if(d.highlow == "H" && !previousI)tidalState ="flood";
+ 					if(d.highlow == "L" && !previousI)tidalState ="ebb";
  				}
  				
+ 				if(Number(tideTime) > Number(thisTime)){
+ 					previous = thisTime;
+ 					previousTide = d.highlow;
+ 				}
 
- 				previous = thisTime;
+ 				previousI = i;
+ 				
 
  			};			
  		});
+
+ 		if(tidalState =="flood"){
+ 			$("#tides").css("background","url(css/arrow_up.png) no-repeat center");
+ 			//$('myOjbect').css('background-image', 'url(' + imageUrl + ')');
+ 		}
+ 		if(tidalState =="ebb"){
+ 			$("#tides").css("background","url(css/arrow_down.png) no-repeat center");
+ 		}
+ 		//if slack don't add background arrow
  	});
 });
 
