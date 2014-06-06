@@ -1,14 +1,19 @@
+var date = new Date();
+var tidalState;
+
 $(document).ready(function() {
-	//TIME	
-		var date = new Date();
-  		var hours = date.getHours();
-		var minutes = date.getMinutes();
-		var ampm = hours >= 12 ? 'pm' : 'am';
-		hours = hours % 12;
-		hours = hours ? hours : 12; // the hour '0' should be '12'
-		minutes = minutes < 10 ? '0'+minutes : minutes;
-		var strTime = hours + ':' + minutes + ' ' + ampm;
-	  	$("#time").text(strTime);
+	//TIME			
+	var hours = date.getHours();
+	var minutes = date.getMinutes();
+	var ampm = hours >= 12 ? 'pm' : 'am';
+	hours = hours % 12;
+	hours = hours ? hours : 12; // the hour '0' should be '12'
+	minutes = minutes < 10 ? '0'+minutes : minutes;
+	var strTime = hours + ':' + minutes + ' ' + ampm;
+	var milthours = hours;
+	if(ampm=="pm")milthours = 12+milthours; 
+	var tideTime = milthours+"."+minutes;
+  	$("#time").text(strTime);
 
 	//WINDS 
 	var windurl = "http://pipes.yahoo.com/pipes/pipe.run?_id=2FV68p9G3BGVbc7IdLq02Q&_render=json&feedcount=10&feedurl=http%3A%2F%2Fwww.ndbc.noaa.gov%2Fdata%2Flatest_obs%2Ffbis1.rss"
@@ -54,39 +59,74 @@ $(document).ready(function() {
 
  	//TIDES
  	var tideurl = "js/app/data.json"
- 	$.getJSON( tideurl, function( data ) { 
- 		// GET CURRENT DATE
- 		var date = new Date();
- 		 
- 		// GET YYYY, MM AND DD FROM THE DATE OBJECT
- 		var yyyy = date.getFullYear().toString();
- 		var mm = (date.getMonth()+1).toString();
- 		var dd  = date.getDate().toString();
- 		 
- 		// CONVERT mm AND dd INTO chars
- 		var mmChars = mm.split('');
- 		var ddChars = dd.split('');
- 		 
- 		// CONCAT THE STRINGS IN YYYY-MM-DD FORMAT
- 		var datestring = yyyy + '/' + (mmChars[1]?mm:"0"+mmChars[0]) + '/' + (ddChars[1]?dd:"0"+ddChars[0]);
- 		
+ 	$.getJSON( tideurl, function( data ) {
+
+ 		var datestring = today(); 		
  		var tidalinfo = data.datainfo.data.item;
- 		
+ 		var previous; 
+ 		var tidalState ="ebb"
+
+ 		if(tidalState =="flood"){
+ 			$("#tides").css("background","url(css/arrow_up.png) no-repeat center");
+ 			//$('myOjbect').css('background-image', 'url(' + imageUrl + ')');
+ 		}
+ 		if(tidalState =="ebb"){
+ 			$("#tides").css("background","url(css/arrow_down.png) no-repeat center");
+ 		}
+
  		$.each(tidalinfo, function(i,d){
- 			if(d.date==datestring){
- 				
+ 			if(d.date==datestring){ 				
  				var addthis = "<p>"+d.highlow+"-  "+d.time+"   "+d.predictions_in_ft+" ft"+"</p>"
- 				$("#tides").append(addthis)
- 			}
- 			
- 			
- 		})
- 	});	
+ 				$("#tides").append(addthis);
+ 				
+ 				//determine ebb vs flood
+ 				var wholeTime = d.time.split(" ");
+ 				var arrTime = wholeTime[0].split(":"); 				
+ 				var thisAmPm = wholeTime[1];
+ 				arrTime[0] = parseInt(arrTime[0]);
+ 				if(thisAmPm == "PM")arrTime[0] = arrTime[0] +12;
+ 				var thisTime = arrTime[0]+"."+arrTime[1];
 
+ 				if(previous){
+ 					console.log(Number(thisTime),Number(tideTime));
+ 					//handle slack
+ 					if(tideTime == thisTime)tidalState ="Slack"
 
+ 				}
+ 				
 
+ 				previous = thisTime;
 
+ 			};			
+ 		});
+ 	});
 });
 
 
+//helper functions
+//parse simple string
+function simpleStr(str){
+	//todo
+}
 
+//parse direction string
+function direction(dir){
+	//todo
+}
+
+//get today's date in YYYY/MM/YY
+function today(){
+	// GET YYYY, MM AND DD FROM THE DATE OBJECT
+	var yyyy = date.getFullYear().toString();
+	var mm = (date.getMonth()+1).toString();
+	var dd  = date.getDate().toString();
+	 
+	// CONVERT mm AND dd INTO chars
+	var mmChars = mm.split('');
+	var ddChars = dd.split('');
+	 
+	// CONCAT THE STRINGS IN YYYY-MM-DD FORMAT
+	var datestring = yyyy + '/' + (mmChars[1]?mm:"0"+mmChars[0]) + '/' + (ddChars[1]?dd:"0"+ddChars[0]);
+
+	return datestring;
+}
